@@ -41,38 +41,28 @@ def findLegalMovements(i, j, board, rows, cols):
 
 
 #store the solutions and return a tupled version of board
-def findSolutions(board, rows, cols):
+def findSolutions(board, rows, cols, numberOfPieces):
 	boardTuple = tuple(tuple(row) for row in board)
 
 	#check if the solution is not already calculated
 	if(boardTuple not in solutions):
-		numberOfPieces = 0
-		firstPieceI = 0
-		firstPieceJ = 0
-		#loop through the board
-		for i in range(rows):
-			for j in range(cols):
-				#if there is a piece
-				if board[i][j] != 0:
-					#increment the number of pieces
-					numberOfPieces += 1
-					if numberOfPieces == 1:
-						#get the piece's position
-						firstPieceI = i
-						firstPieceJ = j
-					#stop if numberOfPieces reach 2
-					elif numberOfPieces == 2:
-						break
-
 
 		#add the board and its solution to solutions
 		if(numberOfPieces == 1):
-			solutions[boardTuple] = {(firstPieceI, firstPieceJ, boardTuple[firstPieceI][firstPieceJ]) : 1}
+			#find the last piece position
+			lastPieceI = 0
+			lastPieceJ = 0
+			for i in range(rows):
+				for j in range(cols):
+					if board[i][j] != 0:
+						lastPieceI = i
+						lastPieceJ = j
+			solutions[boardTuple] = {(lastPieceI, lastPieceJ, boardTuple[lastPieceI][lastPieceJ]) : 1}
 
 		else:
 			solutions[boardTuple] = {}
 			#for each position of the board
-			for i in range(firstPieceI, rows):
+			for i in range(0, rows):
 				for j in range(0, cols):
 					#if there is a piece
 					if board[i][j] != 0:
@@ -84,7 +74,7 @@ def findSolutions(board, rows, cols):
 							board[i][j] = 0
 
 							#find the solutions to the new board
-							newBoard = findSolutions(board, rows, cols)
+							newBoard = findSolutions(board, rows, cols, numberOfPieces-1)
 
 							#print(boardTuple)
 							#take the current solutions
@@ -109,8 +99,18 @@ def main():
 	#get the input
 	rows, cols, board = readInput()
 
+	#count the number of pieces
+	numberOfPieces = 0
+	#loop through the board
+	for i in range(rows):
+		for j in range(cols):
+			#if there is a piece
+			if board[i][j] != 0:
+				#increment the number of pieces
+				numberOfPieces += 1
+
 	#find the solutions
-	boardTuple = findSolutions(board, rows, cols)
+	boardTuple = findSolutions(board, rows, cols, numberOfPieces)
 
 	#print how many different solutions are there
 	finalStates = solutions[boardTuple]
